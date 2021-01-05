@@ -1,12 +1,12 @@
 use pg_orm::{connect, load_from_sql, upsert_to_sql, LoadFromSql, UpsertToSql};
-use std::{borrow::Cow, error::Error};
+use std::error::Error;
 
 #[derive(Debug, LoadFromSql, UpsertToSql)]
 #[table("TempUsers")]
-pub struct User<'a> {
+pub struct User {
     #[key]
     pub id: i32,
-    pub name: Cow<'a, str>,
+    pub name: String,
 }
 
 #[tokio::main]
@@ -23,12 +23,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let user = User {
         id: 3,
-        name: Cow::Borrowed("John Doe"),
+        name: "John Doe".to_string(),
     };
 
     upsert_to_sql(&client, &user).await?;
 
-    let users: Vec<User<'static>> = load_from_sql(&client, &(None,)).await?;
+    let users: Vec<User> = load_from_sql(&client, &(None,)).await?;
 
     println!("{:?}", users);
 
