@@ -10,7 +10,7 @@ pub trait UpsertToSql {
 }
 
 #[instrument(fields(sql=T::upsert_query()), level = "Debug", err)]
-pub async fn upsert<T>(client: &Client, item: &T) -> Result<()>
+pub async fn upsert_to_sql<T>(client: &Client, item: &T) -> Result<()>
 where
     T: Debug + UpsertToSql,
 {

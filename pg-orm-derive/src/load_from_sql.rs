@@ -48,9 +48,10 @@ fn impl_load_from_sql(input: &DeriveInput) -> Result<TokenStream, TokenStream> {
     let clauses = LitStr::new(&clauses, ident.span());
     let params = quote! { vec![#(#params,)*] };
     let types = quote! { (#(Option<#types>,)*) };
+    let (impl_generics, ty_generics, where_clause) = &input.generics.split_for_impl();
 
     Ok(quote! {
-        impl pg_orm::LoadFromSql<#types> for #ident {
+        impl #impl_generics pg_orm::LoadFromSql<#types> for #ident #ty_generics #where_clause {
             fn load_from_sql_params(p: &#types) -> Vec<&(dyn tokio_postgres::types::ToSql + Sync)>  {
                 #params
             }

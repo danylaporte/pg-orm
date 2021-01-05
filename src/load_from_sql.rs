@@ -10,7 +10,7 @@ pub trait LoadFromSql<P> {
 }
 
 #[instrument(level = "Debug", err, fields(sql=%T::load_from_sql_query()))]
-pub async fn load<T, P>(client: &Client, params: &P) -> Result<Vec<T>>
+pub async fn load_from_sql<T, P>(client: &Client, params: &P) -> Result<Vec<T>>
 where
     P: Debug,
     T: FromRow + LoadFromSql<P> + Sized,

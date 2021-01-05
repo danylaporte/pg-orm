@@ -25,8 +25,10 @@ fn impl_from_row(input: &DeriveInput) -> Result<TokenStream, TokenStream> {
 
     errors.result()?;
 
+    let (impl_generics, ty_generics, where_clause) = &input.generics.split_for_impl();
+
     Ok(quote! {
-        impl pg_orm::FromRow for #ident {
+        impl #impl_generics pg_orm::FromRow for #ident #ty_generics #where_clause {
             fn from_row(row: tokio_postgres::Row) -> Self {
                 Self {
                     #fields

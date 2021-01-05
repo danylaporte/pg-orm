@@ -61,9 +61,10 @@ fn impl_upsert_to_sql(input: &DeriveInput) -> Result<TokenStream, TokenStream> {
     );
 
     let sql = LitStr::new(&sql, input.span());
+    let (impl_generics, ty_generics, where_clause) = &input.generics.split_for_impl();
 
     Ok(quote! {
-        impl pg_orm::UpsertToSql for #ident {
+        impl #impl_generics pg_orm::UpsertToSql for #ident #ty_generics #where_clause {
             fn upsert_params(&self) -> Vec<&(dyn tokio_postgres::types::ToSql + Sync)> {
                 #params
             }

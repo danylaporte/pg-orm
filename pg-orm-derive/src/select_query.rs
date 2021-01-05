@@ -23,9 +23,10 @@ fn impl_select_query(input: &DeriveInput) -> Result<TokenStream, TokenStream> {
     let table = input.table()?;
     let sql = format!("SELECT {} FROM {}", select, table);
     let sql = LitStr::new(&sql, ident.span());
+    let (impl_generics, ty_generics, where_clause) = &input.generics.split_for_impl();
 
     Ok(quote! {
-        impl pg_orm::SelectQuery for #ident {
+        impl #impl_generics pg_orm::SelectQuery for #ident #ty_generics #where_clause {
             fn select_query() -> &'static str {
                 #sql
             }
