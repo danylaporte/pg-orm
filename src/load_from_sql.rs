@@ -1,6 +1,6 @@
-use crate::{FromRow, Result};
+use crate::{Conn, FromRow, Result};
 use std::fmt::Debug;
-use tokio_postgres::{types::ToSql, GenericClient};
+use tokio_postgres::types::ToSql;
 use tracing::instrument;
 
 pub trait LoadFromSql<P> {
@@ -10,18 +10,17 @@ pub trait LoadFromSql<P> {
 }
 
 #[instrument(level = "Debug", err, skip(client), fields(sql=%T::load_from_sql_query()))]
-pub async fn load_from_sql<C, T, P>(client: &C, params: &P) -> Result<Vec<T>>
+pub async fn load_from_sql<C: ?Sized, T, P>(client: &C, params: &P) -> Result<Vec<T>>
 where
-    C: GenericClient,
+    C: Conn,
     P: Debug,
     T: FromRow + LoadFromSql<P> + Sized,
 {
     let sql = T::load_from_sql_query();
     let params = T::load_from_sql_params(params);
-    let statement = client.prepare(&sql).await?;
 
     Ok(client
-        .query(&statement, &params[..])
+        .query(sql.as_str(), &params[..])
         .await?
         .into_iter()
         .map(FromRow::from_row)

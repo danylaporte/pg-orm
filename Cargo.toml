@@ -6,6 +6,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
+async-trait = "0.1"
 native-tls = "0.2"
 pg-orm-derive = { path = "pg-orm-derive" }
 postgres-native-tls = "0.5"
